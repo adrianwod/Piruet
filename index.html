@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f4f2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Piruet">
+  <meta name="description" content="Mała, piękna aplikacja do liczenia operacji podczas specjalizacji.">
+  <meta name="color-scheme" content="light">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+  <title>Piruet · Agata</title>
+  <style>
+    :root {--ink:#30263b;--muted:#827b89;--purple:#6b4a78;--violet:#98799e;--rose:#e6aeb9;--rose-light:#f5dde3;--cream:#fbf9f7;--card:#fffefc;--line:#eee5e8;--shadow:0 15px 55px rgba(68,42,68,.085);--safe-bottom:env(safe-area-inset-bottom,0px)}
+    * {box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html {background:#f8f4f2;min-height:100%}
+    body {margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,"Helvetica Neue",sans-serif;color:var(--ink);background:radial-gradient(ellipse at 15% -10%,#fce5e7 0,transparent 33%),radial-gradient(ellipse at 100% 16%,#f0e6f4 0,transparent 32%),#f8f4f2;overscroll-behavior-y:contain}
+    button,input {font:inherit}
+    button {cursor:pointer}
+    button:focus-visible,input:focus-visible {outline:3px solid #b693c3;outline-offset:3px}
+    button:disabled {opacity:.45;cursor:not-allowed}
+    .shell {max-width:540px;min-height:100vh;margin:0 auto;padding:calc(28px + env(safe-area-inset-top,0px)) 22px calc(38px + var(--safe-bottom));position:relative}
+    .header {display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+    .brand {display:flex;align-items:center;gap:10px}
+    .brand-mark {width:39px;height:39px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#9a739d,#654875);color:white;box-shadow:0 6px 15px #7656862e}
+    .brand-mark svg{width:24px;height:24px}
+    .brand-name {font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:25px;letter-spacing:-1.1px}
+    .brand-name span {color:#b993a7}
+    .icon-button {display:grid;place-items:center;width:41px;height:41px;border-radius:50%;border:1px solid #e8dce4;background:rgba(255,255,255,.76);color:var(--purple);box-shadow:0 2px 9px #6b4a7810}
+    .icon-button svg {width:19px;height:19px}
+    .eyebrow {font-size:10px;font-weight:800;letter-spacing:2px;color:#ac899d;text-transform:uppercase}
+    .intro {margin-bottom:25px}
+    h1,h2,h3,p {margin-top:0}
+    .intro h1 {font-family:Georgia,"Times New Roman",serif;font-size:clamp(30px,7.5vw,39px);line-height:1.13;letter-spacing:-1.1px;font-weight:500;margin:10px 0 9px}
+    .intro h1 em {font-style:italic;color:#926b94}
+    .subtitle {font-size:13px;line-height:1.65;color:var(--muted);margin:0;max-width:370px}
+    .spotlight {position:relative;border-radius:31px;background:linear-gradient(152deg,#fffefd 5%,#fff9f9 54%,#f7eef9 100%);border:1px solid #fff;box-shadow:var(--shadow);overflow:hidden;padding:24px 20px 22px;isolation:isolate}
+    .spotlight:before{content:"";position:absolute;z-index:-1;width:240px;height:240px;background:#f4dfeb;filter:blur(54px);opacity:.5;top:10%;right:-130px;border-radius:50%}
+    .spot-header {display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .spot-header .eyebrow {margin-bottom:8px}
+    .spot-title {font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:24px;line-height:1.16;letter-spacing:-.5px;overflow-wrap:anywhere;margin:0;max-width:310px}
+    .spot-edit {width:32px;height:32px;flex:0 0 32px;border:0;background:#f5eef4;border-radius:50%;display:grid;place-items:center;color:#7d617f}
+    .spot-edit svg {width:16px;height:16px}
+    .progress-area {display:grid;place-items:center;padding:9px 0 2px;position:relative}
+    .progress-circle {position:relative;width:236px;height:236px;display:grid;place-items:center}
+    .progress-circle:before {content:"";position:absolute;inset:31px;border-radius:50%;background:radial-gradient(circle,#fff5f6 0%,#f9e8ef 70%,#f2dce6 100%);box-shadow:inset 0 7px 22px rgba(255,255,255,.8);}
+    .progress-svg {width:100%;height:100%;position:absolute;inset:0;transform:rotate(-90deg);overflow:visible}
+    .progress-track {fill:none;stroke:#f0e6e9;stroke-width:5.5}
+    .progress-value {fill:none;stroke:#91669b;stroke-linecap:round;stroke-width:5.5;transition:stroke-dashoffset .7s cubic-bezier(.23,1,.32,1)}
+    .progress-circle.completed .progress-value {stroke:#b48969}
+    .dance-stage {width:160px;height:172px;position:relative;z-index:1;transform:translateY(-8px);perspective:500px;display:grid;place-items:center}
+    .dance-stage:before {content:"";width:80px;height:9px;background:#ba9caa30;border-radius:100%;position:absolute;bottom:10px;filter:blur(4px)}
+    .dancer {width:160px;height:170px;overflow:visible;filter:drop-shadow(0 8px 7px #a5758d25);transform-origin:50% 60%;will-change:transform}
+    .dancer .tutu {transform-origin:101px 108px;animation:tutu-breathe 4s ease-in-out infinite}
+    .dance-stage.perform .dancer {animation:pirouette .94s cubic-bezier(.4,.05,.27,.99) both}
+    .dance-stage.perform .tutu {animation:tutu-spin .94s ease-in-out both}
+    .dance-stage.completed .dancer {animation:soft-bob 4s ease-in-out infinite}
+    @keyframes pirouette {0%{transform:translateY(0) rotateY(0) rotateZ(0) scale(1)}30%{transform:translateY(-13px) rotateY(130deg) rotateZ(-8deg) scale(1.07)}65%{transform:translateY(-5px) rotateY(280deg) rotateZ(7deg) scale(1.03)}100%{transform:translateY(0) rotateY(360deg) rotateZ(0) scale(1)}}
+    @keyframes tutu-spin {0%,100%{transform:scaleX(1)}45%{transform:scaleX(.62)}}
+    @keyframes tutu-breathe {0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.03)}}
+    @keyframes soft-bob {0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+    .number-line {margin:-18px auto 10px;text-align:center;position:relative;z-index:2}
+    .counter {font-weight:750;font-size:31px;letter-spacing:-1.3px;font-variant-numeric:tabular-nums}
+    .counter small {font-size:19px;color:#aaa0ac;font-weight:500;letter-spacing:-.4px}
+    .count-caption {font-size:12px;color:#998e9b;margin-top:3px}
+    .count-caption.done {color:#86628a;font-weight:700}
+    .plus-button {position:relative;overflow:hidden;display:flex;gap:14px;align-items:center;justify-content:center;width:100%;border:0;border-radius:21px;height:79px;background:linear-gradient(108deg,#76527f,#a57ca3);color:white;box-shadow:0 11px 24px #6b4a7836, inset 0 1px 0 #ffffff40;transition:transform .12s ease,box-shadow .2s ease;touch-action:manipulation}
+    .plus-button:active {transform:scale(.97);box-shadow:0 5px 14px #6b4a7836}
+    .plus-button:before {content:"";position:absolute;top:-100%;width:80px;height:300%;background:linear-gradient(90deg,transparent,#ffffff24,transparent);transform:rotate(23deg);left:-100px;animation:shimmer 7s ease-in-out infinite}
+    @keyframes shimmer {0%,65%{left:-100px}90%,100%{left:110%}}
+    .plus-symbol {width:43px;height:43px;display:grid;place-items:center;background:#ffffff24;border:1px solid #ffffff38;border-radius:15px;font-weight:400;font-size:31px;line-height:1}
+    .plus-text {text-align:left;display:grid;gap:3px}
+    .plus-text strong {font-size:18px;letter-spacing:-.2px}
+    .plus-text small {font-size:11px;color:#f4e5f4;letter-spacing:.1px}
+    .plus-button.pulse {animation:button-pulse .55s ease}
+    @keyframes button-pulse {0%,100%{filter:brightness(1)}40%{filter:brightness(1.2)}}
+    .undo-line {display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:#a8a0a8;margin-top:13px}
+    .text-action {color:#755978;border:0;background:none;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:4px 5px}
+    .list-section {margin-top:30px}
+    .section-title {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
+    .section-title h2 {font-size:16px;font-weight:750;letter-spacing:-.25px;margin:0}
+    .add-small {border:0;color:#775780;background:#f0e5ee;padding:10px 13px;border-radius:13px;font-size:12px;font-weight:750;display:flex;align-items:center;gap:6px}
+    .add-small svg{width:16px;height:16px}
+    .operation-list {display:grid;gap:10px}
+    .operation-card {border:1px solid #ece4e7;outline:0;width:100%;text-align:left;background:#ffffffdf;border-radius:20px;padding:17px 17px 15px;box-shadow:0 4px 15px rgba(62,40,59,.025);transition:transform .15s,background .15s,border-color .15s;display:block;color:inherit}
+    .operation-card:active{transform:scale(.99)}
+    .operation-card[aria-current="true"]{border-color:#bba2c0;background:#fffaff;box-shadow:0 5px 18px #76568612}
+    .op-top {display:flex;gap:9px;align-items:center;justify-content:space-between}
+    .op-name {font-weight:700;font-size:13px;line-height:1.45;overflow-wrap:anywhere;max-width:280px}
+    .op-num {flex:none;color:#8d7b91;font-size:12px;font-variant-numeric:tabular-nums;font-weight:650}
+    .mini-bar {margin-top:11px;width:100%;height:5px;background:#f0e9eb;overflow:hidden;border-radius:5px}
+    .mini-fill {width:0;height:100%;background:linear-gradient(90deg,#d7b1d1,#9e7fa8);border-radius:5px;transition:width .5s ease}
+    .operation-card.is-done .mini-fill{background:linear-gradient(90deg,#d6b48b,#af8d70)}
+    .is-done .op-num {color:#986d67}
+    .empty {text-align:center;background:#fffdfc;border:1px solid #f3e8ed;border-radius:30px;box-shadow:var(--shadow);padding:26px 22px 29px;margin-top:22px}
+    .empty-dancer {width:175px;height:188px;margin:0 auto 5px;display:block;filter:drop-shadow(0 6px 8px #c89caf30)}
+    .empty h2 {font-family:Georgia,"Times New Roman",serif;font-size:27px;line-height:1.2;font-weight:500;margin:0 0 10px}
+    .empty p {font-size:13px;color:var(--muted);line-height:1.65;max-width:260px;margin:0 auto 19px}
+    .primary-small {border:0;background:#75577f;color:#fff;border-radius:15px;padding:15px 19px;font-size:14px;font-weight:750;box-shadow:0 7px 15px #76568620}
+    .footer {text-align:center;color:#aa9ca8;font-size:11px;line-height:1.6;margin-top:32px}
+    .hidden {display:none !important}
+    .scrim {position:fixed;inset:0;background:rgba(47,32,53,.38);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:30;animation:fadein .17s ease}
+    .sheet {position:fixed;z-index:31;bottom:0;left:0;right:0;max-width:540px;margin:0 auto;background:var(--card);box-shadow:0 -10px 50px #2b172a2d;border-radius:30px 30px 0 0;padding:15px 24px calc(25px + var(--safe-bottom));max-height:92dvh;overflow-y:auto;animation:slideup .28s cubic-bezier(.2,.8,.25,1)}
+    .sheet-handle {width:40px;height:5px;border-radius:5px;background:#e2d6dc;margin:0 auto 22px}
+    .sheet-head {display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+    .sheet-head h2 {font-family:Georgia,"Times New Roman",serif;font-size:27px;font-weight:500;margin:3px 0 3px}
+    .sheet-note {font-size:12px;line-height:1.55;color:var(--muted);margin:0}
+    .close-button {border:0;background:#f3ecf1;width:33px;height:33px;flex:0 0 33px;border-radius:50%;font-size:20px;color:#896c84;display:grid;place-items:center}
+    .field {display:block;margin:16px 0}
+    .field span {display:block;font-size:12px;font-weight:700;color:#6a566d;margin-bottom:8px}
+    .field input {display:block;width:100%;border:1.5px solid #ede1e9;border-radius:15px;background:#fbf9fa;height:54px;padding:0 14px;font-size:16px;color:#342b38;appearance:none;-webkit-appearance:none}
+    .field input:focus {border-color:#a382ae;background:white;outline:0;box-shadow:0 0 0 3px #bda3c41e}
+    .field-row {display:grid;grid-template-columns:1fr 1fr;gap:13px}
+    .form-error {color:#b24b62;font-size:12px;min-height:18px;margin:0 0 8px}
+    .save-button {width:100%;height:55px;border:0;border-radius:17px;background:linear-gradient(110deg,#73517c,#9c79a0);color:white;font-size:15px;font-weight:750}
+    .danger {margin-top:16px;background:none;border:0;color:#b96b78;font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:3px;width:100%;padding:8px}
+    .settings-options {display:grid;gap:11px}
+    .settings-action {padding:17px 15px;border:1px solid #f0e5e9;border-radius:16px;background:#fffcfc;width:100%;display:flex;text-align:left;justify-content:space-between;align-items:center;color:#4e3c55}
+    .settings-action strong {display:block;font-size:13px}
+    .settings-action small {display:block;font-size:11px;color:#948594;margin-top:4px;max-width:295px;line-height:1.45}
+    .settings-action > svg {width:18px;flex:0 0 18px;color:#96769b}
+    .toggle {width:43px;height:27px;border-radius:16px;background:#dcd0dc;display:flex;align-items:center;padding:3px;transition:background .2s}
+    .toggle:after {content:"";height:21px;width:21px;border-radius:50%;background:white;box-shadow:0 1px 3px #2b172a26;transition:transform .2s}
+    .toggle.on {background:#8b6794}
+    .toggle.on:after {transform:translateX(16px)}
+    .private-note {font-size:11px;color:#988a94;line-height:1.65;margin:16px 1px 0}
+    .toast {position:fixed;z-index:60;left:50%;transform:translate(-50%,20px);bottom:calc(25px + var(--safe-bottom));width:min(calc(100vw - 32px),430px);background:#342a3d;color:#fff;padding:13px 14px 13px 17px;border-radius:17px;box-shadow:0 14px 40px #26162c45;display:flex;align-items:center;gap:12px;justify-content:space-between;opacity:0;pointer-events:none;transition:transform .2s,opacity .2s}
+    .toast.show {opacity:1;transform:translate(-50%,0);pointer-events:auto}
+    .toast span {font-size:12px;line-height:1.4}
+    .toast button {background:#ffffff20;border:0;color:#fff;font-weight:750;font-size:12px;padding:9px 11px;border-radius:10px;flex:none}
+    .celebrate {position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at 50% 40%,#fff9ed 0,#ffeef2 39%,#ead8ef 100%);display:flex;align-items:center;justify-content:center;text-align:center;padding:40px 20px;overflow:hidden;animation:fadein .3s ease}
+    .celebrate-inner {position:relative;z-index:4;width:100%;max-width:450px}
+    .celebrate .eyebrow {color:#aa7b9e}
+    .celebrate h2 {font-family:Georgia,"Times New Roman",serif;font-size:clamp(38px,9vw,54px);font-weight:500;letter-spacing:-1.7px;line-height:1.08;margin:6px 0 12px}
+    .celebrate h2 em {font-style:italic;color:#90658d}
+    .celebrate p {font-size:14px;color:#826b7f;line-height:1.6;margin:0 auto 18px;max-width:330px}
+    .celebrate .dance-stage {width:230px;height:260px;margin:2px auto 0}
+    .celebrate .dancer {width:235px;height:250px;animation:party-spin 3s ease-in-out infinite;transform-origin:50% 60%}
+    .celebrate .dance-stage:before {width:135px;height:13px;bottom:22px}
+    @keyframes party-spin {0%,100%{transform:translateY(0) rotateY(0)}23%{transform:translateY(-20px) rotateY(130deg)}52%{transform:translateY(-5px) rotateY(360deg)}74%{transform:translateY(-11px) rotateY(520deg)}}
+    .celebrate .save-button {width:auto;min-width:198px;padding:0 23px;margin-top:8px}
+    .confetti {position:absolute;z-index:1;top:-10%;width:10px;height:16px;opacity:.95;border-radius:3px;animation:confetti-fall var(--fall,3s) linear infinite;animation-delay:var(--delay,0s);left:var(--left,50%);background:var(--color,#f0b6cd);transform:rotate(var(--twist,10deg))}
+    @keyframes confetti-fall {from{translate:0 -10vh;rotate:0deg}to{translate:var(--drift,50px) 125vh;rotate:900deg}}
+    @keyframes fadein {from{opacity:0}to{opacity:1}}
+    @keyframes slideup {from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .history-list {display:grid;gap:0;max-height:55vh;overflow-y:auto}
+    .history-row {display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 1px;border-bottom:1px solid #f1e8ed}
+    .history-row strong {font-size:12px;line-height:1.45;display:block}
+    .history-row small {display:block;color:#9b8e9d;font-size:11px;margin-top:3px}
+    .history-row b {font-size:13px;color:#835d8a;white-space:nowrap}
+    @media(min-width:541px){.shell{border-left:1px solid #eee4e8;border-right:1px solid #eee4e8;box-shadow:0 0 90px #3625430a}}
+    @media(max-width:359px){.shell{padding-left:15px;padding-right:15px}.intro h1{font-size:30px}.spotlight{padding-left:15px;padding-right:15px}.spot-title{font-size:22px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms !important;transition-duration:.01ms !important;scroll-behavior:auto !important}}
+  </style>
+</head>
+<body>
+  <!-- Wszystkie dane są wyłącznie na urządzeniu. Nie wpisuj danych pacjentek. -->
+  <main class="shell" id="app">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3c3 3 3 5 0 7-3-2-3-4 0-7ZM5 10c4-.5 6 .2 7 3-4 2-6 1-7-3ZM19 10c-4-.5-6 .2-7 3 4 2 6 1 7-3ZM12 13v7M9 20h6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.55"/></svg></div>
+        <div class="brand-name">piruet<span>.</span></div>
+      </div>
+      <button class="icon-button" id="settingsBtn" aria-label="Ustawienia i kopia zapasowa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="M19.3 13.4l1.2-1.4-1.2-1.4-.2-2.1-2-.5-1.4-1.5-2 .7-1.7-.9-1.8.9-2-.7L6.8 8l-2 .5-.2 2.1L3.4 12l1.2 1.4.2 2.1 2 .5 1.4 1.5 2-.7 1.8.9 1.7-.9 2 .7 1.4-1.5 2-.5.2-2.1Z" transform="translate(0 .2)"/></svg></button>
+    </header>
+    <section class="intro">
+      <div class="eyebrow">AGATA · GINEKOLOGIA ONKOLOGICZNA</div>
+      <h1>Każdy krok <em>się liczy.</em></h1>
+      <p class="subtitle">Ty operujesz, Piruet liczy. Bez tabelek, bez zamieszania, za to z odrobiną tańca.</p>
+    </section>
+    <section id="emptyState" class="empty hidden" aria-live="polite">
+      <div id="emptyDancer"></div>
+      <h2>Pierwszy krok?</h2>
+      <p>Dodaj rodzaj operacji i wymaganą liczbę. Potem wystarczy jedno dotknięcie.</p>
+      <button class="primary-small" id="emptyAdd">+ Dodaj pierwszą operację</button>
+    </section>
+    <section id="dashboard" class="hidden">
+      <article class="spotlight" aria-label="Licznik wybranej operacji">
+        <div class="spot-header"><div><div class="eyebrow">TERAZ ZLICZASZ</div><h2 class="spot-title" id="selectedName"></h2></div><button class="spot-edit" id="editSelected" aria-label="Edytuj wybraną operację"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 16-.6 4.6L8 20l11-11-4-4L4 16ZM13 7l4 4"/></svg></button></div>
+        <div class="progress-area">
+          <div class="progress-circle" id="progressCircle">
+            <svg class="progress-svg" viewBox="0 0 236 236" aria-hidden="true"><circle cx="118" cy="118" r="107" class="progress-track"/><circle id="progressValue" cx="118" cy="118" r="107" class="progress-value"/></svg>
+            <div class="dance-stage" id="danceStage"></div>
+          </div>
+        </div>
+        <div class="number-line"><div class="counter"><span id="currentCount">0</span> <small>/ <span id="goalCount">0</span></small></div><div class="count-caption" id="countCaption"></div></div>
+        <button class="plus-button" id="incrementBtn" aria-label="Dodaj jedną wykonaną operację"><span class="plus-symbol">+</span><span class="plus-text"><strong>Jedna operacja więcej</strong><small>Dotknij, żeby doliczyć +1</small></span></button>
+        <div class="undo-line">Pomyłka? <button class="text-action" id="minusBtn">Odejmij jedną</button></div>
+      </article>
+      <section class="list-section" aria-label="Rodzaje operacji">
+        <div class="section-title"><h2>Rodzaje operacji</h2><button class="add-small" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Dodaj nową</button></div>
+        <div class="operation-list" id="operationList"></div>
+      </section>
+    </section>
+    <footer class="footer">Małe kroki. Wielka specjalizacja. <span aria-hidden="true">✦</span><br>Bez danych pacjentek, bez niepotrzebnych statystyk.</footer>
+  </main>
+
+  <div id="scrim" class="scrim hidden"></div>
+  <div id="operationSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="formHeading">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="eyebrow">TWOJA LISTA</div><h2 id="formHeading">Nowa operacja</h2><p class="sheet-note">Wystarczy nazwa i liczba do uzbierania.</p></div><button class="close-button" data-close aria-label="Zamknij">×</button></div>
+    <form id="operationForm" novalidate>
+      <label class="field"><span>Nazwa operacji</span><input id="opName" type="text" maxlength="110" placeholder="Np. rodzaj zabiegu" autocomplete="off" required></label>
+      <div class="field-row"><label class="field"><span>Wymagana liczba</span><input id="opGoal" type="number" min="1" max="100000" step="1" inputmode="numeric" placeholder="Np. 20" required></label><label class="field"><span>Już wykonane</span><input id="opDone" type="number" min="0" max="100000" step="1" inputmode="numeric" value="0"></label></div>
+      <p class="form-error" id="formError" role="alert"></p>
+      <button class="save-button" type="submit">Zapisz operację</button>
+      <button class="danger hidden" type="button" id="deleteBtn">Usuń ten rodzaj operacji</button>
+    </form>
+  </div>
+  <div id="settingsSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="settingsHeading">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="eyebrow">MAŁE UŁATWIENIA</div><h2 id="settingsHeading">Ustawienia</h2><p class="sheet-note">Dane zapisywane są na tym urządzeniu.</p></div><button class="close-button" data-close aria-label="Zamknij">×</button></div>
+    <div class="settings-options">
+      <button class="settings-action" id="soundToggle" type="button" aria-pressed="false"><div><strong>Dźwięk przy dodaniu</strong><small>Delikatny dzwoneczek po naciśnięciu +1.</small></div><span class="toggle" id="soundSwitch"></span></button>
+      <button class="settings-action" id="exportBtn" type="button"><div><strong>Eksportuj kopię zapasową</strong><small>Pobierz plik z licznikami na wszelki wypadek.</small></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v12m-4-4 4 4 4-4M5 17v4h14v-4"/></svg></button>
+      <button class="settings-action" id="importBtn" type="button"><div><strong>Wczytaj kopię zapasową</strong><small>Przywróć liczniki z wcześniej zapisanej kopii.</small></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 16V4m-4 4 4-4 4 4M5 16v5h14v-5"/></svg></button>
+      <button class="settings-action" id="historyBtn" type="button"><div><strong>Historia zmian</strong><small>Ostatnie doliczenia i korekty, gdyby coś się nie zgadzało.</small></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12a8 8 0 1 0 2-5.3M4 4v4h4M12 7v5l4 2"/></svg></button>
+    </div>
+    <p class="private-note">Piruet jest prywatnym licznikiem pomocniczym, a nie oficjalnym dziennikiem szkolenia. Nie wpisuj do niego danych pacjentek. Regularnie zapisuj kopię zapasową.</p>
+  </div>
+  <div id="historySheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="historyHeading">
+    <div class="sheet-handle"></div><div class="sheet-head"><div><div class="eyebrow">PO CICHU W TLE</div><h2 id="historyHeading">Historia</h2><p class="sheet-note">Tylko po to, by dało się sprawdzić pomyłki.</p></div><button class="close-button" data-close aria-label="Zamknij">×</button></div><div class="history-list" id="historyList"></div>
+  </div>
+  <div class="toast" id="toast" role="status"><span id="toastText"></span><button id="toastAction" class="hidden">Cofnij</button></div>
+  <div id="celebration" class="celebrate hidden" role="dialog" aria-modal="true" aria-labelledby="celebrationTitle">
+    <div id="confettiContainer" aria-hidden="true"></div>
+    <div class="celebrate-inner"><div class="eyebrow">✦ CHWILA DLA CIEBIE ✦</div><div class="dance-stage" id="celebrationDancer"></div><h2 id="celebrationTitle">Brawo, <em>Agata!</em></h2><p id="celebrationDescription"></p><button class="save-button" id="celebrateClose">Tańczymy dalej ♡</button></div>
+  </div>
+  <input type="file" id="importFile" accept=".json,application/json" class="hidden">
+  <script>
+  (() => {
+    'use strict';
+    const KEY = 'piruet.app.data.v1';
+    const fmt = new Intl.NumberFormat('pl-PL');
+    const $ = id => document.getElementById(id);
+    const dancerMarkup = `<svg class="dancer" viewBox="0 0 206 222" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Baletnica w pozie arabesque">
+      <defs><linearGradient id="skirtGradient" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#e9abc2"/><stop offset=".55" stop-color="#d28faf"/><stop offset="1" stop-color="#a679ad"/></linearGradient><linearGradient id="bodiceGradient" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#a576a0"/><stop offset="1" stop-color="#76577d"/></linearGradient></defs>
+      <ellipse cx="111" cy="199" rx="35" ry="3" fill="#cca5bc" opacity=".16"/>
+      <g stroke="#967186" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M104 124 Q102 155 100 172 L88 208"/><path d="M111 125 Q129 140 155 139 L190 133"/>
+      </g>
+      <g fill="#b68491"><path d="m82 207 12-1 4 5-18 2Z"/><path d="m187 128 7 3 7 1-9 5-7-3Z"/></g>
+      <path d="M102 70 C89 63 78 54 69 39 Q62 29 52 29" stroke="#c493a1" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M119 73 Q134 51 154 47 L174 32" stroke="#c493a1" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M50 28 q-9 4-11 0 M174 32 q5-9 10-8" stroke="#c493a1" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <circle cx="109" cy="40" r="16" fill="#c995a3"/><circle cx="123" cy="27" r="8" fill="#6e546a"/>
+      <path d="M96 42 Q90 23 103 20 Q123 16 126 34 Q114 27 102 31Z" fill="#624b63"/>
+      <path d="M106 57 L105 66 M115 57 L117 66" stroke="#c995a3" stroke-width="7" stroke-linecap="round"/>
+      <path d="M103 67 Q109 73 119 66 L126 84 117 109 97 109 91 84Z" fill="url(#bodiceGradient)"/>
+      <path d="M100 79 Q109 86 122 78" stroke="#eec7d9" stroke-width="2" fill="none"/>
+      <g class="tutu"><path d="M97 102 Q77 106 57 121 Q83 139 109 131 Q143 139 168 120 Q135 105 118 102Z" fill="url(#skirtGradient)" opacity=".98"/><path d="M98 106 Q75 116 56 121 Q85 126 110 123 Q147 130 167 120" fill="none" stroke="#f7dbe6" stroke-width="2.3" opacity=".7"/><path d="M109 109 L92 132 M109 109 L121 133 M109 109 L145 128" stroke="#f4d2e0" stroke-width="1.7" opacity=".75"/></g>
+      <path d="M109 64 q4-4 8 0" stroke="#fff0f0" stroke-width="1" fill="none" opacity=".6"/>
+      <g fill="#edd0e2"><path d="m50 13 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/><circle cx="173" cy="79" r="3"/><circle cx="32" cy="94" r="2.5"/></g>
+    </svg>`;
+    // Każda ilustracja musi mieć własne identyfikatory gradientów SVG.
+    // Inaczej ukryte SVG z pustego stanu przechwytuje gradienty pozostałych baletnic.
+    const uniqueDancer = suffix => dancerMarkup.replaceAll('skirtGradient',`skirtGradient${suffix}`).replaceAll('bodiceGradient',`bodiceGradient${suffix}`);
+    $('danceStage').innerHTML = uniqueDancer('Main');
+    $('emptyDancer').innerHTML = uniqueDancer('Empty').replace('class="dancer"','class="empty-dancer"');
+    $('celebrationDancer').innerHTML = uniqueDancer('Party');
+
+    const defaultData = () => ({version:1,operations:[],selected:null,events:[],sound:false});
+    let data = defaultData();
+    let editingId = null;
+    let toastTimer = 0;
+    let lastUndo = null;
+    let dancerTimer = 0;
+    let audioContext = null;
+    let locked = false;
+
+    const isInt = n => Number.isSafeInteger(n) && n >= 0 && n <= 100000;
+    const normalize = raw => {
+      if (!raw || typeof raw !== 'object' || !Array.isArray(raw.operations)) throw Error('Nieprawidłowy format kopii.');
+      if (raw.operations.length > 300) throw Error('Za dużo pozycji w kopii.');
+      const ids = new Set();
+      const operations = raw.operations.map((o,i) => {
+        const id = String(o.id || `import-${i}`).slice(0,80);
+        const name = typeof o.name === 'string' ? o.name.trim().slice(0,110) : '';
+        const goal = Number(o.goal), count = Number(o.count);
+        if (!id || ids.has(id) || !name || !isInt(goal) || goal < 1 || !isInt(count)) throw Error('Uszkodzone dane operacji w kopii.');
+        ids.add(id);
+        return {id,name,goal,count,createdAt:typeof o.createdAt === 'string'?o.createdAt:new Date().toISOString()};
+      });
+      const events = Array.isArray(raw.events) ? raw.events.slice(-5000).filter(e => e && ids.has(String(e.id)) && [-1,1].includes(e.delta) && typeof e.at==='string').map(e => ({id:String(e.id),name:String(e.name||'Operacja').slice(0,110),delta:e.delta,at:e.at})) : [];
+      return {version:1,operations,selected:ids.has(String(raw.selected)) ? String(raw.selected) : (operations[0]?.id ?? null),events,sound:raw.sound===true};
+    };
+    try {const saved=localStorage.getItem(KEY);if(saved)data=normalize(JSON.parse(saved));}catch(err){console.warn('Piruet: zapis niedostępny lub uszkodzony',err);}
+    const persist = () => {try{localStorage.setItem(KEY,JSON.stringify(data));return true;}catch(e){showToast('Nie mogę zapisać. Zrób kopię zapasową.');return false;}};
+    const selected = () => data.operations.find(o=>o.id===data.selected) || data.operations[0] || null;
+    const uid = () => (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const clampPercent = (n,g) => Math.min(100,Math.max(0,Math.round(n/g*100)));
+    const circleCircumference = 2*Math.PI*107;
+    $('progressValue').style.strokeDasharray = String(circleCircumference);
+    const text = (id,value) => $(id).textContent = value;
+    function render() {
+      const empty = data.operations.length === 0;
+      $('emptyState').classList.toggle('hidden',!empty);
+      $('dashboard').classList.toggle('hidden',empty);
+      if(empty)return;
+      const op = selected();if(!op)return;
+      data.selected=op.id;
+      text('selectedName',op.name);
+      text('currentCount',fmt.format(op.count));
+      text('goalCount',fmt.format(op.goal));
+      const remaining = op.goal-op.count;
+      const done = remaining<=0;
+      text('countCaption',done ? (op.count>op.goal ? `Cel osiągnięty · ${fmt.format(op.count-op.goal)} ponad plan ✦` : 'Cel osiągnięty! ✦') : `Jeszcze ${fmt.format(remaining)} do celu`);
+      $('countCaption').classList.toggle('done',done);
+      $('progressCircle').classList.toggle('completed',done);
+      $('danceStage').classList.toggle('completed',done);
+      $('progressValue').style.strokeDashoffset = String(circleCircumference * (1-clampPercent(op.count,op.goal)/100));
+      $('minusBtn').disabled = op.count===0;
+      const list=$('operationList');list.replaceChildren();
+      for (const item of data.operations){
+        const card=document.createElement('button');card.type='button';card.className='operation-card'+(item.count>=item.goal?' is-done':'');card.dataset.id=item.id;card.setAttribute('aria-current',String(item.id===op.id));
+        const top=document.createElement('div');top.className='op-top';
+        const name=document.createElement('span');name.className='op-name';name.textContent=item.name;
+        const count=document.createElement('span');count.className='op-num';count.textContent=`${fmt.format(item.count)} / ${fmt.format(item.goal)}${item.count>=item.goal?' ✓':''}`;
+        top.append(name,count);
+        const bar=document.createElement('div');bar.className='mini-bar';bar.setAttribute('role','progressbar');bar.setAttribute('aria-label',`Postęp: ${item.name}`);bar.setAttribute('aria-valuemin','0');bar.setAttribute('aria-valuemax',String(item.goal));bar.setAttribute('aria-valuenow',String(Math.min(item.count,item.goal)));
+        const fill=document.createElement('div');fill.className='mini-fill';fill.style.width=`${clampPercent(item.count,item.goal)}%`;bar.append(fill);card.append(top,bar);list.append(card);
+      }
+    }
+    function animateDancer(){
+      const stage=$('danceStage');clearTimeout(dancerTimer);stage.classList.remove('perform','completed');void stage.offsetWidth;stage.classList.add('perform');
+      dancerTimer=setTimeout(()=>{stage.classList.remove('perform');if(selected()?.count>=selected()?.goal)stage.classList.add('completed');},1000);
+      $('incrementBtn').classList.remove('pulse');void $('incrementBtn').offsetWidth;$('incrementBtn').classList.add('pulse');
+    }
+    function playNotes(celebration=false){
+      if(!data.sound)return;
+      try{
+        const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+        audioContext ||= new Audio();if(audioContext.state==='suspended') audioContext.resume();
+        const now=audioContext.currentTime;
+        const notes=celebration?[523.25,659.25,783.99,1046.5]:[784];
+        notes.forEach((frequency,i)=>{
+          const osc=audioContext.createOscillator(),gain=audioContext.createGain();
+          osc.type='sine';osc.frequency.setValueAtTime(frequency,now+i*.12);
+          gain.gain.setValueAtTime(.0001,now+i*.12);gain.gain.exponentialRampToValueAtTime(.065,now+i*.12+.015);gain.gain.exponentialRampToValueAtTime(.0001,now+i*.12+.22);
+          osc.connect(gain);gain.connect(audioContext.destination);osc.start(now+i*.12);osc.stop(now+i*.12+.25);
+        });
+      }catch(e){console.warn('Dźwięk niedostępny',e)}
+    }
+    function showToast(message,undo=null){
+      clearTimeout(toastTimer);text('toastText',message);lastUndo=undo;
+      $('toastAction').classList.toggle('hidden',!undo);$('toast').classList.add('show');
+      toastTimer=setTimeout(()=>{$('toast').classList.remove('show');lastUndo=null;},3900);
+    }
+    function changeCount(delta,{isUndo=false}={}){
+      const op=selected();if(!op||op.count+delta<0||op.count+delta>100000)return;
+      const before=op.count;op.count+=delta;
+      data.events.push({id:op.id,name:op.name,delta,at:new Date().toISOString()});
+      if(data.events.length>5000)data.events=data.events.slice(-5000);
+      const saved=persist();render();
+      if(delta>0){animateDancer();if(before<op.goal&&op.count>=op.goal){playNotes(true);showCelebration(op)}else{playNotes(false);showToast(saved?'Dodano jedną operację ✦':'Nie zapisano zmiany',{id:op.id,delta:-1});}}
+      else if(!isUndo)showToast('Odjęto jedną operację',{id:op.id,delta:1});
+      else showToast('Zmiana cofnięta');
+    }
+    function closeSheets(){
+      $('scrim').classList.add('hidden');['operationSheet','settingsSheet','historySheet'].forEach(id=>$(id).classList.add('hidden'));
+      if($('celebration').classList.contains('hidden'))document.body.style.overflow='';
+      locked=false;
+    }
+    function openSheet(name){
+      closeSheets();document.body.style.overflow='hidden';$('scrim').classList.remove('hidden');$(name).classList.remove('hidden');locked=true;
+    }
+    function openForm(id=null){
+      editingId=id;
+      const op=data.operations.find(o=>o.id===id);
+      text('formHeading',op?'Edytuj operację':'Nowa operacja');
+      $('opName').value=op?.name||'';$('opGoal').value=op?.goal||'';$('opDone').value=op?.count??0;
+      $('formError').textContent='';$('deleteBtn').classList.toggle('hidden',!op);
+      openSheet('operationSheet');setTimeout(()=>$('opName').focus({preventScroll:true}),300);
+    }
+    function saveForm(e){
+      e.preventDefault();const name=$('opName').value.trim(),goal=Number($('opGoal').value),count=Number($('opDone').value);
+      if(name.length<2){text('formError','Wpisz nazwę operacji (co najmniej 2 znaki).');return}
+      if(!isInt(goal)||goal<1||!$('opGoal').value){text('formError','Wymagana liczba musi być dodatnią liczbą całkowitą.');return}
+      if(!isInt(count)||!$('opDone').value){text('formError','Liczba wykonanych operacji nie może być ujemna.');return}
+      if(editingId){const op=data.operations.find(o=>o.id===editingId);if(!op)return;op.name=name;op.goal=goal;op.count=count;}
+      else {const id=uid();data.operations.unshift({id,name,goal,count,createdAt:new Date().toISOString()});data.selected=id;}
+      const saved=persist();closeSheets();render();showToast(saved?'Zapisane. Można tańczyć! ♡':'Nie zapisano danych. Zrób kopię zapasową.');
+    }
+    function showCelebration(op){
+      closeSheets();document.body.style.overflow='hidden';
+      text('celebrationDescription',`Udało się! ${fmt.format(op.goal)} operacji w kategorii „${op.name}”. Ten piruet jest całkowicie zasłużony.`);
+      const box=$('confettiContainer');box.replaceChildren();
+      const colors=['#d9a5c4','#9e79a5','#f1d69d','#e7b2b8','#ffffff','#b2a0c9'];
+      for(let i=0;i<52;i++){
+        const piece=document.createElement('i');piece.className='confetti';piece.style.setProperty('--left',`${Math.random()*100}%`);piece.style.setProperty('--delay',`${Math.random()*-4}s`);piece.style.setProperty('--fall',`${2.5+Math.random()*2.5}s`);piece.style.setProperty('--drift',`${(Math.random()-.5)*220}px`);piece.style.setProperty('--twist',`${Math.random()*90}deg`);piece.style.setProperty('--color',colors[i%colors.length]);piece.style.width=`${5+Math.random()*8}px`;piece.style.height=`${9+Math.random()*13}px`;box.append(piece);
+      }
+      $('toast').classList.remove('show');$('celebration').classList.remove('hidden');$('celebrateClose').focus({preventScroll:true});
+    }
+    function closeCelebration(){
+      $('celebration').classList.add('hidden');$('confettiContainer').replaceChildren();document.body.style.overflow='';
+    }
+    function exportData(){
+      const blob=new Blob([JSON.stringify({...data,exportedAt:new Date().toISOString(),app:'Piruet'},null,2)],{type:'application/json;charset=utf-8'});
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`piruet-kopia-${new Date().toISOString().slice(0,10)}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500);
+      showToast('Kopia przygotowana do zapisania');
+    }
+    async function importData(file){
+      if(!file)return;
+      try{
+        if(file.size>2_000_000)throw Error('Plik jest zbyt duży.');
+        const parsed=normalize(JSON.parse(await file.text()));
+        if(!window.confirm(`Wczytać kopię? Zastąpi ona obecne ${data.operations.length} rodzajów operacji danymi z pliku (${parsed.operations.length}).`))return;
+        data=parsed;persist();closeSheets();render();showToast('Kopia przywrócona ♡');
+      }catch(e){window.alert('Nie udało się odczytać kopii: '+(e.message||'nieznany błąd'));}
+      finally{$('importFile').value='';}
+    }
+    function renderHistory(){
+      const list=$('historyList');list.replaceChildren();
+      if(!data.events.length){const p=document.createElement('p');p.className='sheet-note';p.textContent='Jeszcze nie ma żadnych doliczeń. Historia pojawi się tu po pierwszym +1.';list.append(p);return;}
+      for(const event of data.events.slice(-80).reverse()){
+        const row=document.createElement('div');row.className='history-row';
+        const left=document.createElement('div'),name=document.createElement('strong'),date=document.createElement('small'),change=document.createElement('b');
+        name.textContent=event.name;
+        const when=new Date(event.at);date.textContent=Number.isNaN(when.getTime())?'Data nieznana':new Intl.DateTimeFormat('pl-PL',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(when);
+        change.textContent=event.delta>0?'+1':'−1';left.append(name,date);row.append(left,change);list.append(row);
+      }
+    }
+
+    $('incrementBtn').addEventListener('click',()=>changeCount(1));
+    $('minusBtn').addEventListener('click',()=>changeCount(-1));
+    $('toastAction').addEventListener('click',()=>{
+      const undo=lastUndo;if(!undo)return;
+      const previous=data.selected;data.selected=undo.id;changeCount(undo.delta,{isUndo:true});
+      data.selected=previous;render();
+    });
+    $('operationList').addEventListener('click',e=>{
+      const card=e.target.closest('.operation-card');if(!card)return;
+      data.selected=card.dataset.id;persist();render();document.querySelector('.spotlight').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    $('editSelected').addEventListener('click',()=>openForm(selected()?.id));
+    $('addBtn').addEventListener('click',()=>openForm());
+    $('emptyAdd').addEventListener('click',()=>openForm());
+    $('operationForm').addEventListener('submit',saveForm);
+    $('deleteBtn').addEventListener('click',()=>{
+      const op=data.operations.find(o=>o.id===editingId);if(!op)return;
+      if(!window.confirm(`Usunąć „${op.name}” wraz z licznikiem ${op.count}? Tej operacji nie da się cofnąć bez kopii zapasowej.`))return;
+      data.operations=data.operations.filter(o=>o.id!==op.id);data.events=data.events.filter(e=>e.id!==op.id);
+      if(data.selected===op.id)data.selected=data.operations[0]?.id||null;
+      persist();closeSheets();render();showToast('Rodzaj operacji usunięty');
+    });
+    $('settingsBtn').addEventListener('click',()=>openSheet('settingsSheet'));
+    $('soundToggle').addEventListener('click',()=>{data.sound=!data.sound;persist();renderSettings();if(data.sound)playNotes(false)});
+    function renderSettings(){$('soundSwitch').classList.toggle('on',data.sound);$('soundToggle').setAttribute('aria-pressed',String(data.sound));}
+    $('exportBtn').addEventListener('click',exportData);
+    $('importBtn').addEventListener('click',()=>$('importFile').click());
+    $('importFile').addEventListener('change',e=>importData(e.target.files[0]));
+    $('historyBtn').addEventListener('click',()=>{renderHistory();openSheet('historySheet')});
+    $('celebrateClose').addEventListener('click',closeCelebration);
+    $('scrim').addEventListener('click',closeSheets);
+    document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeSheets));
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('celebration').classList.contains('hidden'))closeCelebration();else if(locked)closeSheets()}});
+    renderSettings();render();
+    if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('Tryb offline niedostępny',e));
+  })();
+  </script>
+</body>
+</html>
